@@ -1,9 +1,10 @@
-package com.nexusbrain.app.api;
+package com.nexusbrain.app.api.controller;
 
-import com.nexusbrain.app.api.dto.AddWorkerRequest;
-import com.nexusbrain.app.api.dto.SearchWorkersQuery;
-import com.nexusbrain.app.api.dto.UpdateWorkerRequest;
-import com.nexusbrain.app.api.dto.WorkerDetails;
+import com.nexusbrain.app.api.dto.request.AddWorkerRequest;
+import com.nexusbrain.app.api.dto.request.SearchWorkersQueryRequest;
+import com.nexusbrain.app.api.dto.request.UpdateWorkerRequest;
+import com.nexusbrain.app.api.dto.response.ResourceCreatedResponse;
+import com.nexusbrain.app.api.dto.response.WorkerDetailsResponse;
 import com.nexusbrain.app.service.WorkerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,9 @@ public class WorkerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> addWorker(@Valid @RequestBody AddWorkerRequest request) {
+    public ResponseEntity<ResourceCreatedResponse<Long>> addWorker(@Valid @RequestBody AddWorkerRequest request) {
         LOG.info("Received addWorker request");
-        workerService.addWorker(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResourceCreatedResponse<>(workerService.addWorker(request)), HttpStatus.CREATED);
     }
 
     @PutMapping("/{workerId}/update")
@@ -49,13 +49,13 @@ public class WorkerController {
     }
 
     @GetMapping("/{workerId}/get")
-    public ResponseEntity<WorkerDetails> getWorkerDetails(@PathVariable long workerId) {
+    public ResponseEntity<WorkerDetailsResponse> getWorker(@PathVariable long workerId) {
         LOG.info("Received getWorkerDetails request");
-        return new ResponseEntity<>(workerService.getWorker(workerId), HttpStatus.OK);
+        return new ResponseEntity<>(workerService.getWorkerDetails(workerId), HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<WorkerDetails>> searchWorkers(Pageable pageable, @Valid SearchWorkersQuery query) {
+    public ResponseEntity<Page<WorkerDetailsResponse>> searchWorkers(Pageable pageable, @Valid SearchWorkersQueryRequest query) {
         LOG.info("Received searchWorkers request");
         return new ResponseEntity<>(workerService.findWorkers(pageable, query), HttpStatus.OK);
     }

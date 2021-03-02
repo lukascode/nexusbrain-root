@@ -3,6 +3,7 @@ package com.nexusbrain.app.exception;
 import com.nexusbrain.app.api.error.ApiErrorDetails;
 import org.springframework.http.HttpStatus;
 
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -29,6 +30,18 @@ public class ApiException extends RuntimeException {
 
     public static ApiException workerNotFound(long workerId) {
         return new ApiException("WORKER_NOT_FOUND", String.format("Worker with id: %d not found", workerId), NOT_FOUND);
+    }
+
+    public static ApiException workerAlreadyHasTeam(long workerId) {
+        return new ApiException("WORKER_ALREADY_HAS_TEAM", String.format("Worker with id: %d already has team", workerId), CONFLICT);
+    }
+
+    public static ApiException teamNotFound(long teamId) {
+        return new ApiException("TEAM_NOT_FOUND", String.format("Team with id: %d not found", teamId), NOT_FOUND);
+    }
+
+    public static ApiException projectNotFound(long projectId) {
+        return new ApiException("PROJECT_NOT_FOUND", String.format("Project with id: %d not found", projectId), NOT_FOUND);
     }
 
     public static ApiException internalServerError(Throwable cause) {

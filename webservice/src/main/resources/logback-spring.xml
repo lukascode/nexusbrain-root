@@ -3,11 +3,11 @@
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <property name="LOGS" value="./logs" />
+    <property name="LOGS" value="logs" />
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%replace(eventId\(%X{eventId}\)){'eventId\(\)', ''} - ${CONSOLE_LOG_PATTERN}</pattern>
+            <pattern>%replace(eventId\(%X{eventId}\) ){'eventId\(\) ', ''}${CONSOLE_LOG_PATTERN}</pattern>
             <charset>utf8</charset>
         </encoder>
     </appender>
@@ -15,7 +15,7 @@
     <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/nexusbrain.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%replace(eventId\(%X{eventId}\)){'eventId\(\)', ''} - ${FILE_LOG_PATTERN}</pattern>
+            <pattern>%replace(eventId\(%X{eventId}\) ){'eventId\(\) ', ''}${FILE_LOG_PATTERN}</pattern>
             <charset>utf8</charset>
         </encoder>
 

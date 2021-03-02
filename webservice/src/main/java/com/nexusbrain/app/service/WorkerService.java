@@ -1,9 +1,9 @@
 package com.nexusbrain.app.service;
 
-import com.nexusbrain.app.api.dto.AddWorkerRequest;
-import com.nexusbrain.app.api.dto.SearchWorkersQuery;
-import com.nexusbrain.app.api.dto.UpdateWorkerRequest;
-import com.nexusbrain.app.api.dto.WorkerDetails;
+import com.nexusbrain.app.api.dto.request.AddWorkerRequest;
+import com.nexusbrain.app.api.dto.request.SearchWorkersQueryRequest;
+import com.nexusbrain.app.api.dto.request.UpdateWorkerRequest;
+import com.nexusbrain.app.api.dto.response.WorkerDetailsResponse;
 import com.nexusbrain.app.converter.WorkerToDetailsConverter;
 import com.nexusbrain.app.model.Worker;
 import com.nexusbrain.app.repository.WorkerRepository;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.nexusbrain.app.exception.ApiException.workerNotFound;
 
@@ -32,34 +31,37 @@ public class WorkerService {
         this.workerToDetailsConverter = workerToDetailsConverter;
     }
 
-    public WorkerDetails getWorker(long workerId) {
-        Optional<Worker> maybeWorker = workerRepository.findById(workerId);
-        Worker worker = maybeWorker.orElseThrow(() -> workerNotFound(workerId));
-        WorkerDetails workerDetails = workerToDetailsConverter.convert(worker);
+    public Worker getWorker(long workerId) {
+        return workerRepository.findById(workerId).orElseThrow(() -> workerNotFound(workerId));
+    }
+
+    public WorkerDetailsResponse getWorkerDetails(long workerId) {
+        Worker worker = getWorker(workerId);
+        WorkerDetailsResponse workerDetails = workerToDetailsConverter.convert(worker);
         LOG.info("Got worker {id: {}} successfully", workerId);
         return workerDetails;
     }
 
-    public Page<WorkerDetails> findWorkers(Pageable pageable, SearchWorkersQuery query) {
-        Page<WorkerDetails> workers = workerRepository.findWorkers(pageable, query.getPhrase(), query.getTeamId())
+    public Page<WorkerDetailsResponse> findWorkers(Pageable pageable, SearchWorkersQueryRequest query) {
+        Page<WorkerDetailsResponse> workers = workerRepository.findWorkers(pageable, query.getPhrase(), query.getTeamId())
                                                                              .map(workerToDetailsConverter::convert);
         LOG.info("Got workers {size: {}}", workers.getNumberOfElements());
         return workers;
     }
 
     @Transactional
-    public void addWorker(AddWorkerRequest request) {
+    public long addWorker(AddWorkerRequest request) {
         Objects.requireNonNull(request);
         Worker worker = new Worker(request.getFullName(), request.getEmail());
         workerRepository.save(worker);
         LOG.info("Worker {email: {}, id: {}} added successfully", request.getEmail(), worker.getId());
+        return worker.getId();
     }
 
     @Transactional
     public void updateWorker(long workerId, UpdateWorkerRequest request) {
         Objects.requireNonNull(request);
-        Optional<Worker> maybeWorker = workerRepository.findById(workerId);
-        Worker worker = maybeWorker.orElseThrow(() -> workerNotFound(workerId));
+        Worker worker = getWorker(workerId);
         worker.setFullName(request.getFullName());
         worker.setEmail(request.getEmail());
         LOG.info("Worker {id: {}} updated successfully", workerId);
@@ -67,8 +69,7 @@ public class WorkerService {
 
     @Transactional
     public void deleteWorker(long workerId) {
-        Optional<Worker> maybeWorker = workerRepository.findById(workerId);
-        Worker worker = maybeWorker.orElseThrow(() -> workerNotFound(workerId));
+        Worker worker = getWorker(workerId);
         workerRepository.delete(worker);
         LOG.info("Worker {id: {}} deleted successfully", workerId);
     }

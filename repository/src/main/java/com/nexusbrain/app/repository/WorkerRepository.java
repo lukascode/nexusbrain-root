@@ -9,9 +9,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface WorkerRepository extends PagingAndSortingRepository<Worker, Long> {
 
-    @Query("SELECT w FROM Worker w WHERE " +
-            "(:phrase IS NULL OR w.email LIKE %:phrase% OR w.fullName LIKE %:phrase%) AND " +
-            "(:teamId IS NULL OR w.team.id = :teamId)")
+    String FIND_WORKERS_WHERE_QUERY = "WHERE (:phrase IS NULL OR w.email LIKE %:phrase% OR w.fullName LIKE %:phrase%) AND (:teamId IS NULL OR w.team.id = :teamId)";
+
+    @Query(value = "SELECT w FROM Worker w LEFT JOIN FETCH w.team t " + FIND_WORKERS_WHERE_QUERY,
+            countQuery = "SELECT count(w) FROM Worker w " + FIND_WORKERS_WHERE_QUERY)
     Page<Worker> findWorkers(Pageable pageable, @Param("phrase") String phrase, @Param("teamId") Long teamId);
 
 }

@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -109,7 +111,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ApiErrorDetails errorDetails = new ApiErrorDetails(status.name(), ex.getMessage(), status);
+        StringBuilder message = new StringBuilder();
+        for (int i = 0; i < ex.getBindingResult().getFieldErrors().size(); ++i) {
+            FieldError error = ex.getBindingResult().getFieldErrors().get(i);
+            if (i > 0) {
+                message.append(", ");
+            }
+            message.append(error.getField() + ": " + error.getDefaultMessage());
+        }
+        for (int i = 0; i < ex.getBindingResult().getGlobalErrors().size(); ++i) {
+            ObjectError error = ex.getBindingResult().getGlobalErrors().get(i);
+            if (i > 0) {
+                message.append(", ");
+            }
+            message.append(error.getObjectName() + ": " + error.getDefaultMessage());
+        }
+        ApiErrorDetails errorDetails = new ApiErrorDetails(status.name(), message.toString(), status);
         return handleAndBuildResponse(ex, errorDetails, status);
     }
 

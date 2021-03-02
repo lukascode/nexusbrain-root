@@ -1,9 +1,9 @@
-package com.nexusbrain.app.api.dto;
+package com.nexusbrain.app.api.dto.response;
 
 import lombok.Data;
 
 @Data
-public class WorkerDetails {
+public class WorkerDetailsResponse {
 
     private Long id;
 

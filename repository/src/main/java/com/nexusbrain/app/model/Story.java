@@ -6,8 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "stories")
+//@Entity
+//@Table(name = "stories")
 public class Story {
 
     @Id
