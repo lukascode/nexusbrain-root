@@ -28,13 +28,14 @@
 		<project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 		<project.resources.sourceEncoding>${encoding}</project.resources.sourceEncoding>
 		<archetype.encoding>${encoding}</archetype.encoding>
+		<it.skip>true</it.skip>
 		<testng.version>7.3.0</testng.version>
 		<vavr.version>0.10.3</vavr.version>
 		<lombok.version>1.18.18</lombok.version>
 		<swagger.version>3.0.0</swagger.version>
 		<testcontainers.version>1.15.0</testcontainers.version>
 		<failsafe.version>2.18.1</failsafe.version>
-		<it.skip>true</it.skip>
+		<liquibase.version>3.8.9</liquibase.version>
 	</properties>
 
 	<dependencyManagement>
