@@ -48,6 +48,10 @@ public class Project {
         return description;
     }
 
+    public List<Team> getTeams() {
+        return teams;
+    }
+
     public int getNumberOfTeams() {
         return teams.size();
     }

@@ -63,7 +63,7 @@ public class TeamService {
         Team team = getTeam(teamId);
         List<WorkerDetailsResponse> workers = team.getWorkers().stream()
                 .map(workerToDetailsConverter::convert).collect(Collectors.toList());
-        LOG.info("Got teams {size: {}}", workers.size());
+        LOG.info("Got team workers {size: {}}", workers.size());
         return workers;
     }
 

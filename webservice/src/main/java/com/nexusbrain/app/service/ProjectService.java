@@ -6,6 +6,7 @@ import com.nexusbrain.app.api.dto.request.UpdateProjectRequest;
 import com.nexusbrain.app.api.dto.response.ProjectDetailsResponse;
 import com.nexusbrain.app.api.dto.response.TeamDetailsResponse;
 import com.nexusbrain.app.converter.ProjectToDetailsConverter;
+import com.nexusbrain.app.converter.TeamToDetailsConverter;
 import com.nexusbrain.app.model.Project;
 import com.nexusbrain.app.repository.ProjectRepository;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.nexusbrain.app.exception.ApiException.projectNotFound;
 
@@ -25,10 +27,14 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectToDetailsConverter projectToDetailsConverter;
+    private final TeamToDetailsConverter teamToDetailsConverter;
 
-    public ProjectService(ProjectRepository projectRepository, ProjectToDetailsConverter projectToDetailsConverter) {
+    public ProjectService(ProjectRepository projectRepository,
+                          ProjectToDetailsConverter projectToDetailsConverter,
+                          TeamToDetailsConverter teamToDetailsConverter) {
         this.projectRepository = projectRepository;
         this.projectToDetailsConverter = projectToDetailsConverter;
+        this.teamToDetailsConverter = teamToDetailsConverter;
     }
 
     public Project getProject(long projectId) {
@@ -43,11 +49,19 @@ public class ProjectService {
     }
 
     public List<ProjectDetailsResponse> findProjects(SearchProjectsQueryRequest query) {
-        return null;
+        List<ProjectDetailsResponse> projects = projectRepository.findProjects(query.getPhrase()).stream()
+                                                                 .map(projectToDetailsConverter::convert)
+                                                                 .collect(Collectors.toList());
+        LOG.info("Got projects {size: {}}", projects.size());
+        return projects;
     }
 
     public List<TeamDetailsResponse> getProjectTeams(long projectId) {
-        return null;
+        Project project = getProject(projectId);
+        List<TeamDetailsResponse> teams = project.getTeams().stream()
+                .map(teamToDetailsConverter::convert).collect(Collectors.toList());
+        LOG.info("Got project teams {size: {}}", teams.size());
+        return teams;
     }
 
     @Transactional
