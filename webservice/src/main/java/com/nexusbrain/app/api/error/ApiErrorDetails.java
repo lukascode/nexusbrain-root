@@ -16,6 +16,8 @@ public class ApiErrorDetails {
     @JsonIgnore
     private HttpStatus status;
 
+    public ApiErrorDetails() {}
+
     public ApiErrorDetails(String message, String description, HttpStatus status) {
         this.message = message;
         this.description = description;

@@ -1,73 +1,133 @@
 package com.nexusbrain.app.api;
 
-import com.nexusbrain.app.api.dto.request.AddWorkerRequest;
+import com.nexusbrain.app.api.dto.request.UpdateWorkerRequest;
 import com.nexusbrain.app.api.dto.response.ResourceCreatedResponse;
 import com.nexusbrain.app.api.dto.response.WorkerDetailsResponse;
+import com.nexusbrain.app.api.error.ApiErrorDetails;
+import com.nexusbrain.app.assertion.ErrorAssertions;
+import com.nexusbrain.app.assertion.WorkerAssertions;
 import com.nexusbrain.app.base.BaseIT;
-import com.nexusbrain.app.repository.WorkerRepository;
+import com.nexusbrain.app.data.WorkerData;
+import com.nexusbrain.app.flow.WorkerFlow;
+import io.vavr.control.Either;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.testng.annotations.Test;
 
-import java.net.URI;
-
 public class WorkerControllerIT extends BaseIT {
 
-    private static final String FULL_NAME = "John Doe";
-    private static final String EMAIL = "john@example.com";
-    private static final String BAD_EMAIL = "bad_email";
+    @Autowired
+    private WorkerFlow workerFlow;
 
     @Autowired
-    private WorkerRepository workerRepository;
+    private WorkerAssertions workerAssertions;
+
+    @Autowired
+    private ErrorAssertions errorAssertions;
 
     @Test
-    public void shouldSaveWorkerProperly() {
-        // given
-        AddWorkerRequest addWorkerRequest = prepareAddWorkerRequest();
-
-        RequestEntity<AddWorkerRequest> postRequest = new RequestEntity<>(
-                addWorkerRequest,
-                HttpMethod.POST,
-                URI.create("/nb/v1.0/workers/add")
-        );
-
+    public void shouldAddWorkerProperly() {
         // when
-        ResponseEntity<ResourceCreatedResponse<Long>> response = testRestTemplate.exchange(postRequest, new ParameterizedTypeReference<ResourceCreatedResponse<Long>>(){});
+        Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<ResourceCreatedResponse<Long>>> either = workerFlow.addWorker();
+        ResponseEntity<ResourceCreatedResponse<Long>> response = either.get();
 
         // then
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        Long workerId = response.getBody().getResourceId();
-        Assertions.assertThat(workerId).isNotNull();
-        Assertions.assertThat(workerRepository.existsById(workerId));
-
-        ResponseEntity<WorkerDetailsResponse> getResponse = testRestTemplate.getForEntity("/nb/v1.0/workers/{workerId}/get", WorkerDetailsResponse.class, workerId);
-        Assertions.assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        WorkerDetailsResponse workerDetails = getResponse.getBody();
-        Assertions.assertThat(workerDetails.getFullName()).isEqualTo(FULL_NAME);
-        Assertions.assertThat(workerDetails.getEmail()).isEqualTo(EMAIL);
-        Assertions.assertThat(workerDetails.getTeamId()).isNull();
-        Assertions.assertThat(workerDetails.getTeamName()).isNull();
+        workerAssertions.assertThat(response.getBody().getResourceId())
+                .exists()
+                .hasEmail(WorkerData.DEFAULT_EMAIL)
+                .hasFullName(WorkerData.DEFAULT_FULL_NAME);
     }
 
-    private AddWorkerRequest prepareAddWorkerRequest() {
-        AddWorkerRequest addWorkerRequest = new AddWorkerRequest();
-        addWorkerRequest.setFullName(FULL_NAME);
-        addWorkerRequest.setEmail(EMAIL);
-        return addWorkerRequest;
+    @Test
+    public void shouldNotAddWorkerWhenBadEmail() {
+        // when
+        Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<ResourceCreatedResponse<Long>>> either = workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder.builder()
+                        .withEmail(WorkerData.BAD_EMAIL).build()
+        );
+        ResponseEntity<ApiErrorDetails> response = either.getLeft();
+
+        // then
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        errorAssertions.assertThat(response.getBody())
+                .hasMessage("BAD_REQUEST")
+                .hasDescription("email: must be a well-formed email address")
+                .hasEventId();
     }
 
-    private AddWorkerRequest prepareAddWorkerRequestWithBadEmail() {
-        AddWorkerRequest addWorkerRequest = new AddWorkerRequest();
-        addWorkerRequest.setFullName(FULL_NAME);
-        addWorkerRequest.setEmail(BAD_EMAIL);
-        return addWorkerRequest;
+    @Test
+    public void shouldReturnNotFoundWhenWorkerDoesNotExists() {
+        // when
+        Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<WorkerDetailsResponse>> either = workerFlow.getWorker(WorkerData.BAD_WORKER_ID);
+        ResponseEntity<ApiErrorDetails> response = either.getLeft();
+
+        // then
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+        errorAssertions.assertThat(response.getBody())
+                .hasMessage("WORKER_NOT_FOUND")
+                .hasDescription(String.format("Worker with id: %d not found", WorkerData.BAD_WORKER_ID))
+                .hasEventId();
     }
 
+    @Test
+    public void shouldUpdateWorkerProperly() {
+        // given
+        long workerId = workerFlow.addWorker().get().getBody().getResourceId();
+
+        // when
+        HttpStatus status = workerFlow.updateWorker(workerId).get().getStatusCode();
+        Assertions.assertThat(status).isEqualTo(HttpStatus.OK);
+
+        // then
+        workerAssertions.assertThat(workerId)
+                .exists()
+                .hasFullName(WorkerData.DEFAULT_FULL_NAME_UPDATE)
+                .hasEmail(WorkerData.DEFAULT_EMAIL_UPDATE);
+    }
+
+    @Test
+    public void shouldNotUpdateWorkerWhenBadRequest() {
+        // given
+        long workerId = workerFlow.addWorker().get().getBody().getResourceId();
+
+        // when
+        UpdateWorkerRequest updateRequest = WorkerData.UpdateWorkerRequestBuilder.builder()
+                                                      .withFullName(WorkerData.BAD_FULL_NAME).build();
+        Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<Void>> either = workerFlow.updateWorker(workerId, updateRequest);
+        ResponseEntity<ApiErrorDetails> response = either.getLeft();
+
+        // then
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        errorAssertions.assertThat(response.getBody())
+                .hasMessage("BAD_REQUEST")
+                .hasDescription("fullName: must not be blank")
+                .hasEventId();
+    }
+
+    @Test
+    public void shouldDeleteWorkerProperly() {
+        // given
+        long workerId = workerFlow.addWorker().get().getBody().getResourceId();
+
+        // when
+        Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<Void>> either = workerFlow.deleteWorker(workerId);
+        ResponseEntity<Void> response = either.get();
+
+        // then
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<ApiErrorDetails> getResponse = workerFlow.getWorker(workerId).getLeft();
+        Assertions.assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        errorAssertions.assertThat(getResponse.getBody())
+                .hasMessage("WORKER_NOT_FOUND")
+                .hasDescription(String.format("Worker with id: %d not found", workerId))
+                .hasEventId();
+    }
 }

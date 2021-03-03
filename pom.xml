@@ -36,6 +36,7 @@
 		<testcontainers.version>1.15.0</testcontainers.version>
 		<failsafe.version>2.18.1</failsafe.version>
 		<liquibase.version>3.8.9</liquibase.version>
+		<gson.version>2.8.6</gson.version>
 	</properties>
 
 	<dependencyManagement>
@@ -68,6 +69,11 @@
 				<artifactId>lombok</artifactId>
 				<version>${lombok.version}</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
