@@ -32,16 +32,20 @@ public class ApiException extends RuntimeException {
         return new ApiException("WORKER_NOT_FOUND", String.format("Worker with id: %d not found", workerId), NOT_FOUND);
     }
 
-    public static ApiException workerAlreadyHasTeam(long workerId) {
-        return new ApiException("WORKER_ALREADY_HAS_TEAM", String.format("Worker with id: %d already has team", workerId), CONFLICT);
-    }
-
     public static ApiException teamNotFound(long teamId) {
         return new ApiException("TEAM_NOT_FOUND", String.format("Team with id: %d not found", teamId), NOT_FOUND);
     }
 
+    public static ApiException teamAlreadyHasWorker(long teamId, long workerId) {
+        return new ApiException("TEAM_ALREADY_HAS_WORKER", String.format("Team with id: %d already has worker with id: %d", teamId, workerId), CONFLICT);
+    }
+
     public static ApiException projectNotFound(long projectId) {
         return new ApiException("PROJECT_NOT_FOUND", String.format("Project with id: %d not found", projectId), NOT_FOUND);
+    }
+
+    public static ApiException projectNotContainTeam(long projectId, long teamId) {
+        return new ApiException("PROJECT_NOT_CONTAIN_TEAM", String.format("Project with id: %d not contain team with id: %d", projectId, teamId), NOT_FOUND);
     }
 
     public static ApiException internalServerError(Throwable cause) {

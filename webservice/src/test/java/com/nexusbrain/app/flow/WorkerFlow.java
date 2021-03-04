@@ -2,6 +2,7 @@ package com.nexusbrain.app.flow;
 
 import com.google.gson.reflect.TypeToken;
 import com.nexusbrain.app.api.dto.request.AddWorkerRequest;
+import com.nexusbrain.app.api.dto.request.SearchWorkersQueryRequest;
 import com.nexusbrain.app.api.dto.request.UpdateWorkerRequest;
 import com.nexusbrain.app.api.dto.response.ResourceCreatedResponse;
 import com.nexusbrain.app.api.dto.response.WorkerDetailsResponse;
@@ -9,6 +10,7 @@ import com.nexusbrain.app.api.error.ApiErrorDetails;
 import com.nexusbrain.app.data.WorkerData;
 import io.vavr.control.Either;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -53,5 +55,18 @@ public class WorkerFlow {
         RequestEntity<Void> requestEntity = new RequestEntity<>(HttpMethod.DELETE, URI.create(String.format("/nb/v1.0/workers/%d/delete", workerId)));
         ResponseEntity<String> response = testRestTemplate.exchange(requestEntity, String.class);
         return FlowUtil.parseAndGetResponse(response, new TypeToken<Void>(){}.getType());
+    }
+
+    public Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<Page<WorkerDetailsResponse>>> searchWorkers() {
+        return searchWorkers(WorkerData.SearchWorkersQueryRequestBuilder.builder().build());
+    }
+
+    public Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<Page<WorkerDetailsResponse>>> searchWorkers(SearchWorkersQueryRequest request) {
+        String url = "/nb/v1.0/workers/search";
+        if (request.getPhrase() != null) {
+            url += "?phrase=" + request.getPhrase();
+        }
+        ResponseEntity<String> response = testRestTemplate.getForEntity(url, String.class);
+        return FlowUtil.parseAndGetResponse(response, new TypeToken<Page<WorkerDetailsResponse>>(){}.getType());
     }
 }

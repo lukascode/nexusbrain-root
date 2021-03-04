@@ -1,5 +1,6 @@
 package com.nexusbrain.app.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,14 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
-
-import static javax.persistence.CascadeType.DETACH;
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.REFRESH;
+import java.util.Set;
 
 @Entity
 @Table(name = "teams")
@@ -33,8 +30,8 @@ public class Team {
     @Column
     private String description;
 
-    @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, mappedBy = "team")
-    private List<Worker> workers = new ArrayList<>();
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TeamWorker> workers = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
@@ -48,16 +45,50 @@ public class Team {
     }
 
     public void addWorker(Worker worker) {
-        Objects.requireNonNull(worker);
-        worker.setTeam(this);
-        workers.add(worker);
+        TeamWorker teamWorker = new TeamWorker(this, worker);
+        workers.add(teamWorker);
+        worker.getTeams().add(teamWorker);
+    }
+
+    public boolean hasWorker(Worker worker) {
+        TeamWorker teamWorker = new TeamWorker(this, worker);
+        return workers.contains(teamWorker);
+    }
+
+    public void removeWorker(Worker worker) {
+        for (Iterator<TeamWorker> iterator = workers.iterator(); iterator.hasNext(); ) {
+            TeamWorker teamWorker = iterator.next();
+            if (teamWorker.getTeam().equals(this) &&
+                    teamWorker.getWorker().equals(worker)) {
+                iterator.remove();
+                teamWorker.getWorker().getTeams().remove(teamWorker);
+                teamWorker.setTeam(null);
+                teamWorker.setWorker(null);
+            }
+        }
     }
 
     public void removeWorkers() {
-        for (Worker w: workers) {
-            w.setTeam(null);
+        for (TeamWorker teamWorker: workers) {
+            teamWorker.getWorker().getTeams().remove(teamWorker);
+            teamWorker.setTeam(null);
+            teamWorker.setWorker(null);
         }
         workers.clear();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Team team = (Team) o;
+        return Objects.equals(id, team.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public boolean hasProject() {
@@ -76,7 +107,7 @@ public class Team {
         return description;
     }
 
-    public List<Worker> getWorkers() {
+    public Set<TeamWorker> getWorkers() {
         return workers;
     }
 
@@ -86,6 +117,10 @@ public class Team {
 
     public Project getProject() {
         return project;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {

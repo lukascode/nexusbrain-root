@@ -17,11 +17,7 @@ public class WorkerToDetailsConverter implements Converter<Worker, WorkerDetails
         workerDetails.setId(worker.getId());
         workerDetails.setFullName(worker.getFullName());
         workerDetails.setEmail(worker.getEmail());
-        if (worker.hasTeam()) {
-            Team team = worker.getTeam();
-            workerDetails.setTeamId(team.getId());
-            workerDetails.setTeamName(team.getName());
-        }
+        workerDetails.setNumberOfTeams(worker.getNumberOfTeams());
         return workerDetails;
     }
 }

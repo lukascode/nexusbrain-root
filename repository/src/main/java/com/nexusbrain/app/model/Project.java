@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,6 +57,10 @@ public class Project {
         return teams.size();
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -70,11 +75,47 @@ public class Project {
         teams.add(team);
     }
 
+    public boolean hasTeam(Team team) {
+        Objects.requireNonNull(team);
+        for (Team t: teams) {
+            if (t.equals(team)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void removeTeam(Team team) {
+        Objects.requireNonNull(team);
+        for (Iterator<Team> iterator = teams.iterator(); iterator.hasNext(); ) {
+            Team t = iterator.next();
+            if (team.equals(t)) {
+                iterator.remove();
+                t.setProject(null);
+                t.removeWorkers();
+            }
+        }
+    }
+
     public void removeTeams() {
         for (Team t: teams) {
             t.setProject(null);
             t.removeWorkers();
         }
         teams.clear();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Project project = (Project) o;
+        return Objects.equals(id, project.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

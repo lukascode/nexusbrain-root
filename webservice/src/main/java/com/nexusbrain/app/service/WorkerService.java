@@ -43,8 +43,7 @@ public class WorkerService {
     }
 
     public Page<WorkerDetailsResponse> findWorkers(Pageable pageable, SearchWorkersQueryRequest query) {
-        Page<WorkerDetailsResponse> workers = workerRepository.findWorkers(pageable, query.getPhrase(), query.getTeamId())
-                                                                             .map(workerToDetailsConverter::convert);
+        Page<WorkerDetailsResponse> workers = workerRepository.findWorkers(pageable, query.getPhrase()).map(workerToDetailsConverter::convert);
         LOG.info("Got workers {size: {}}", workers.getNumberOfElements());
         return workers;
     }

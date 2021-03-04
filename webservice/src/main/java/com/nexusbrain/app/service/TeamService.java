@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.nexusbrain.app.exception.ApiException.teamAlreadyHasWorker;
 import static com.nexusbrain.app.exception.ApiException.teamNotFound;
-import static com.nexusbrain.app.exception.ApiException.workerAlreadyHasTeam;
 
 @Service
 public class TeamService {
@@ -62,7 +62,7 @@ public class TeamService {
     public List<WorkerDetailsResponse> getTeamWorkers(long teamId) {
         Team team = getTeam(teamId);
         List<WorkerDetailsResponse> workers = team.getWorkers().stream()
-                .map(workerToDetailsConverter::convert).collect(Collectors.toList());
+                .map(w -> workerToDetailsConverter.convert(w.getWorker())).collect(Collectors.toList());
         LOG.info("Got team workers {size: {}}", workers.size());
         return workers;
     }
@@ -71,11 +71,19 @@ public class TeamService {
     public void addWorkerToTeam(long workerId, long teamId) {
         Team team = getTeam(teamId);
         Worker worker = workerService.getWorker(workerId);
-        if (worker.hasTeam()) {
-            throw workerAlreadyHasTeam(workerId);
+        if (team.hasWorker(worker)) {
+            throw teamAlreadyHasWorker(teamId, workerId);
         }
         team.addWorker(worker);
         LOG.info("Worker {workerId: {}} added to Team {teamId: {}} successfully", workerId, teamId);
+    }
+
+    @Transactional
+    public void removeWorkerFromTeam(long workerId, long teamId) {
+        Team team = getTeam(teamId);
+        Worker worker = workerService.getWorker(workerId);
+        team.removeWorker(worker);
+        LOG.info("Worker {workerId: {}} removed from Team {teamId: {}} successfully", workerId, teamId);
     }
 
     @Transactional

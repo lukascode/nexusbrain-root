@@ -7,6 +7,4 @@ public class SearchWorkersQueryRequest {
 
     private String phrase;
 
-    private Long teamId;
-
 }

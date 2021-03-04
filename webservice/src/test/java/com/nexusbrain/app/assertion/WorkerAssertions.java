@@ -49,6 +49,11 @@ public class WorkerAssertions {
             return this;
         }
 
+        public WorkerAssertion hasNumberOfTeams(int numberOfTeams) {
+            Assertions.assertThat(right().getBody().getNumberOfTeams()).isEqualTo(numberOfTeams);
+            return this;
+        }
+
         private ResponseEntity<ApiErrorDetails> left() {
             return either.getLeft();
         }

@@ -11,8 +11,6 @@ public class WorkerDetailsResponse {
 
     private String email;
 
-    private String teamName;
-
-    private Long teamId;
+    private Integer numberOfTeams;
 
 }

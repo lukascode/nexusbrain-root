@@ -9,9 +9,11 @@ import com.nexusbrain.app.assertion.WorkerAssertions;
 import com.nexusbrain.app.base.BaseIT;
 import com.nexusbrain.app.data.WorkerData;
 import com.nexusbrain.app.flow.WorkerFlow;
+import com.nexusbrain.app.repository.WorkerRepository;
 import io.vavr.control.Either;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.testng.annotations.Test;
@@ -26,6 +28,9 @@ public class WorkerControllerIT extends BaseIT {
 
     @Autowired
     private ErrorAssertions errorAssertions;
+
+    @Autowired
+    private WorkerRepository workerRepository;
 
     @Test
     public void shouldAddWorkerProperly() {
@@ -129,5 +134,55 @@ public class WorkerControllerIT extends BaseIT {
                 .hasMessage("WORKER_NOT_FOUND")
                 .hasDescription(String.format("Worker with id: %d not found", workerId))
                 .hasEventId();
+    }
+
+    @Test
+    public void searchWorkersTest() {
+        workerRepository.deleteAll();
+
+        // given 3 workers with default name and email
+        workerFlow.addWorker();
+        workerFlow.addWorker();
+        workerFlow.addWorker();
+
+        // when
+        Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<Page<WorkerDetailsResponse>>> either = workerFlow.searchWorkers();
+
+        ResponseEntity<Page<WorkerDetailsResponse>> response = either.get();
+
+        // then
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody().getNumberOfElements()).isEqualTo(3);
+    }
+
+    @Test
+    public void searchWorkersByPhraseTest() {
+        workerRepository.deleteAll();
+
+        // given
+        workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("john@example.com").build()
+        );
+        workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("mark@example.com").build()
+        );
+        workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("john@test").build()
+        );
+
+        // when
+        Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<Page<WorkerDetailsResponse>>> either = workerFlow.searchWorkers(
+                WorkerData.SearchWorkersQueryRequestBuilder
+                        .builder().withPhrase("example.com").build()
+        );
+
+        ResponseEntity<Page<WorkerDetailsResponse>> response = either.get();
+
+        // then
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody().getNumberOfElements()).isEqualTo(2);
     }
 }

@@ -1,6 +1,7 @@
 package com.nexusbrain.app.api.controller;
 
 import com.nexusbrain.app.api.dto.request.AddProjectRequest;
+import com.nexusbrain.app.api.dto.request.AddTeamRequest;
 import com.nexusbrain.app.api.dto.request.SearchProjectsQueryRequest;
 import com.nexusbrain.app.api.dto.request.UpdateProjectRequest;
 import com.nexusbrain.app.api.dto.response.ProjectDetailsResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -64,6 +66,22 @@ public class ProjectController {
     public ResponseEntity<List<TeamDetailsResponse>> getProjectTeams(@PathVariable long projectId) {
         LOG.info("Received getProjectTeams request");
         return new ResponseEntity<>(projectService.getProjectTeams(projectId), HttpStatus.OK);
+    }
+
+    @PutMapping("/{projectId}/teams/add")
+    public ResponseEntity<ResourceCreatedResponse<Long>> addTeamToProject(@PathVariable long projectId, @Valid @RequestBody AddTeamRequest request) {
+        LOG.info("Received addTeamToProject request");
+        long teamId = projectService.addTeamToProject(projectId, request);
+        return new ResponseEntity<>(new ResourceCreatedResponse<>(teamId), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{projectId}/teams/move")
+    public ResponseEntity<Void> moveTeamToAnotherProject(@PathVariable long projectId,
+                                                         @RequestParam long teamId,
+                                                         @RequestParam long targetProjectId) {
+        LOG.info("Received moveTeamToAnotherProject request");
+        projectService.moveTeamToAnotherProject(projectId, targetProjectId, teamId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{projectId}/delete")

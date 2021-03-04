@@ -1,6 +1,7 @@
 package com.nexusbrain.app.service;
 
 import com.nexusbrain.app.api.dto.request.AddProjectRequest;
+import com.nexusbrain.app.api.dto.request.AddTeamRequest;
 import com.nexusbrain.app.api.dto.request.SearchProjectsQueryRequest;
 import com.nexusbrain.app.api.dto.request.UpdateProjectRequest;
 import com.nexusbrain.app.api.dto.response.ProjectDetailsResponse;
@@ -8,6 +9,7 @@ import com.nexusbrain.app.api.dto.response.TeamDetailsResponse;
 import com.nexusbrain.app.converter.ProjectToDetailsConverter;
 import com.nexusbrain.app.converter.TeamToDetailsConverter;
 import com.nexusbrain.app.model.Project;
+import com.nexusbrain.app.model.Team;
 import com.nexusbrain.app.repository.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.nexusbrain.app.exception.ApiException.projectNotContainTeam;
 import static com.nexusbrain.app.exception.ApiException.projectNotFound;
 
 @Service
@@ -27,13 +30,15 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectToDetailsConverter projectToDetailsConverter;
+    private final TeamService teamService;
     private final TeamToDetailsConverter teamToDetailsConverter;
 
     public ProjectService(ProjectRepository projectRepository,
                           ProjectToDetailsConverter projectToDetailsConverter,
-                          TeamToDetailsConverter teamToDetailsConverter) {
+                          TeamService teamService, TeamToDetailsConverter teamToDetailsConverter) {
         this.projectRepository = projectRepository;
         this.projectToDetailsConverter = projectToDetailsConverter;
+        this.teamService = teamService;
         this.teamToDetailsConverter = teamToDetailsConverter;
     }
 
@@ -65,6 +70,15 @@ public class ProjectService {
     }
 
     @Transactional
+    public long addTeamToProject(long projectId, AddTeamRequest addTeamRequest) {
+        Project project = getProject(projectId);
+        long teamId = teamService.addTeam(addTeamRequest);
+        project.addTeam(teamService.getTeam(teamId));
+        LOG.info("Team {teamId: {}} added to project {projectId: {}} successfully", teamId, projectId);
+        return teamId;
+    }
+
+    @Transactional
     public long addProject(AddProjectRequest request) {
         Objects.requireNonNull(request);
         Project project = new Project(request.getName(), request.getDescription());
@@ -88,5 +102,17 @@ public class ProjectService {
         project.removeTeams();
         projectRepository.delete(project);
         LOG.info("Project {id: {}} deleted successfully", projectId);
+    }
+
+    @Transactional
+    public void moveTeamToAnotherProject(long projectId, long targetProjectId, long teamId) {
+        Project project = getProject(projectId);
+        Project targetProject = getProject(targetProjectId);
+        Team team = teamService.getTeam(teamId);
+        if (!project.hasTeam(team)) {
+            throw projectNotContainTeam(projectId, teamId);
+        }
+        targetProject.addTeam(team);
+        LOG.info("Team {teamId: {}} moved from project {projectId: {}} to project {targetProjectId: {}}", teamId, projectId, targetProjectId);
     }
 }

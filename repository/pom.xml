@@ -5,7 +5,7 @@
     <parent>
         <artifactId>nexusbrain</artifactId>
         <groupId>com.nexusbrain</groupId>
-        <version>0.1.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -33,6 +33,11 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

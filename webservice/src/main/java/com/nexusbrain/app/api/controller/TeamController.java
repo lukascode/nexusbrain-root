@@ -1,9 +1,7 @@
 package com.nexusbrain.app.api.controller;
 
-import com.nexusbrain.app.api.dto.request.AddTeamRequest;
 import com.nexusbrain.app.api.dto.request.SearchTeamsQueryRequest;
 import com.nexusbrain.app.api.dto.request.UpdateTeamRequest;
-import com.nexusbrain.app.api.dto.response.ResourceCreatedResponse;
 import com.nexusbrain.app.api.dto.response.TeamDetailsResponse;
 import com.nexusbrain.app.api.dto.response.WorkerDetailsResponse;
 import com.nexusbrain.app.service.TeamService;
@@ -14,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,12 +31,6 @@ public class TeamController {
 
     public TeamController(TeamService teamService) {
         this.teamService = teamService;
-    }
-
-    @PostMapping("/add")
-    public ResponseEntity<ResourceCreatedResponse<Long>> addTeam(@Valid @RequestBody AddTeamRequest request) {
-        LOG.info("Received addTeam request");
-        return new ResponseEntity<>(new ResourceCreatedResponse<>(teamService.addTeam(request)), HttpStatus.CREATED);
     }
 
     @PutMapping("/{teamId}/update")
@@ -72,6 +63,13 @@ public class TeamController {
         LOG.info("Received addWorkerToTeam request");
         teamService.addWorkerToTeam(workerId, teamId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{teamId}/workers/remove")
+    public ResponseEntity<Void> removeWorkerFromTeam(@PathVariable long teamId, @RequestParam long workerId) {
+        LOG.info("Received removeWorkerFromTeam request");
+        teamService.removeWorkerFromTeam(workerId, teamId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{teamId}/delete")

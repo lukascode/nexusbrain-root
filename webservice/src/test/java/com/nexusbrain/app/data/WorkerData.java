@@ -1,6 +1,7 @@
 package com.nexusbrain.app.data;
 
 import com.nexusbrain.app.api.dto.request.AddWorkerRequest;
+import com.nexusbrain.app.api.dto.request.SearchWorkersQueryRequest;
 import com.nexusbrain.app.api.dto.request.UpdateWorkerRequest;
 
 public class WorkerData {
@@ -12,6 +13,7 @@ public class WorkerData {
     public static final Long BAD_WORKER_ID = 554433L;
     public static final String BAD_EMAIL = "bad_email";
     public static final String BAD_FULL_NAME = "";
+    public static final String DEFAULT_PHRASE = null;
 
     public static class AddWorkerRequestBuilder {
         private String fullName = DEFAULT_FULL_NAME;
@@ -61,6 +63,25 @@ public class WorkerData {
             UpdateWorkerRequest request = new UpdateWorkerRequest();
             request.setEmail(email);
             request.setFullName(fullName);
+            return request;
+        }
+    }
+
+    public static class SearchWorkersQueryRequestBuilder {
+        private String phrase = DEFAULT_PHRASE;
+
+        public static SearchWorkersQueryRequestBuilder builder() {
+            return new SearchWorkersQueryRequestBuilder();
+        }
+
+        public SearchWorkersQueryRequestBuilder withPhrase(String phrase) {
+            this.phrase = phrase;
+            return this;
+        }
+
+        public SearchWorkersQueryRequest build() {
+            SearchWorkersQueryRequest request = new SearchWorkersQueryRequest();
+            request.setPhrase(phrase);
             return request;
         }
     }
