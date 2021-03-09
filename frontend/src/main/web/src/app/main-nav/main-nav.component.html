@@ -5,7 +5,7 @@
       <span class="logo-header">Nexusbrain</span>
       <span class="toolbar-spacer"></span>
       <button fxHide [fxShow.lt-md]="true" mat-icon-button class="toggle-nav-button" (click)="toggleNavigation()">
-        <mat-icon>{{ navHidden ? 'menu' : 'close' }}</mat-icon>
+        <mat-icon>{{ mobileNavHidden ? 'menu' : 'close' }}</mat-icon>
       </button>
       <button mat-icon-button aria-label="Night mode" (click)="toggleDarkMode()">
         <mat-icon>mode_night</mat-icon>
@@ -30,7 +30,7 @@
     </mat-nav-list>
   </ng-template>
 
-  <div *ngIf="!navHidden" fxHide [fxShow.lt-md]="true" [ngClass.lt-md]="'mobile-navigation'">
+  <div  *ngIf="!mobileNavHidden" fxHide [fxShow.lt-md]="true" [ngClass.lt-md]="'mobile-navigation'" [@mobileNavInOut]>
     <ng-container *ngTemplateOutlet="navigation"></ng-container>
   </div>
 
