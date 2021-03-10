@@ -1,10 +1,12 @@
 <div class="main-nav-container">
-  <div class="mat-elevation-z6">
+  <div class="header mat-elevation-z6">
     <mat-toolbar class="toolbar" color="primary">
-      <mat-icon class="logo-icon">cloud</mat-icon>
-      <span class="logo-header">Nexusbrain</span>
+      <a href="#" fxLayout="row" fxLayoutAlign="center center">
+        <mat-icon class="logo-icon">cloud</mat-icon>
+        <span class="logo-header">Nexusbrain</span>
+      </a>
       <span class="toolbar-spacer"></span>
-      <button fxHide [fxShow.lt-md]="true" mat-icon-button class="toggle-nav-button" (click)="toggleNavigation()">
+      <button fxHide [fxShow.lt-md]="true" mat-icon-button class="toggle-nav-button" (click)="toggleMobileNav()">
         <mat-icon>{{ mobileNavHidden ? 'menu' : 'close' }}</mat-icon>
       </button>
       <button mat-icon-button aria-label="Night mode" (click)="toggleDarkMode()">
@@ -22,15 +24,15 @@
 
   <ng-template #navigation>
     <mat-nav-list>
-      <a mat-list-item href="#">Projekty</a>
-      <a mat-list-item href="#">Zespoły</a>
-      <a mat-list-item href="#">Pracownicy</a>
-      <a mat-list-item href="#">Sprinty</a>
-      <a mat-list-item href="#">Nexus</a>
+      <a mat-list-item href="#">Projects</a>
+      <a mat-list-item href="#">Teams</a>
+      <a mat-list-item href="#">Workers</a>
+      <a mat-list-item href="#">Settings</a>
+      <a mat-list-item href="#">Log out</a>
     </mat-nav-list>
   </ng-template>
 
-  <div  *ngIf="!mobileNavHidden" fxHide [fxShow.lt-md]="true" [ngClass.lt-md]="'mobile-navigation'" [@mobileNavInOut]>
+  <div *ngIf="!mobileNavHidden" fxHide [fxShow.lt-md]="true" [ngClass.lt-md]="'mobile-navigation'" [@mobileNavInOut]>
     <ng-container *ngTemplateOutlet="navigation"></ng-container>
   </div>
 
@@ -40,12 +42,20 @@
       <ng-container *ngTemplateOutlet="navigation"></ng-container>
     </div>
     <div class="main-content" [ngClass.md]="'desktop-main-content'" [ngClass.gt-md]="'desktop-main-content'">
-      lorem
-<!--      <p *ngFor="let i of [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]">Lorem</p>-->
+      <!-- page content -->
+
+      <!-- dummy content, you can remove this -->
+<!--      <div fxLayout="column" fxLayoutAlign="start center">-->
+<!--        <img src="https://apicms.thestar.com.my/uploads/images/2020/08/24/831125.jpg" alt="technology" style="max-width: 100%; height: auto; opacity: 0.75">-->
+<!--      </div>-->
+
+      Page content here
+
+      <!-- page content -->
     </div>
     <div class="footer">
       <mat-toolbar color="primary">
-        <span class="logo-header">Footer</span>
+        <img src="assets/angular.svg" alt="Angular icon" width="44" height="44">&nbsp;Powered by Angular
       </mat-toolbar>
     </div>
   </div>

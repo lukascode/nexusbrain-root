@@ -1,5 +1,5 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, Renderer2} from '@angular/core';
-import {animate, state, style, transition, trigger} from "@angular/animations";
+import {AfterViewChecked, ChangeDetectorRef, Component, ElementRef, Renderer2} from '@angular/core';
+import {animate, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'app-main-nav',
@@ -8,28 +8,23 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
   animations: [
     trigger('mobileNavInOut', [
       transition(':enter', [
-        style({ transform: 'translateY(-100%)' }),
-        animate('200ms ease-out',
-          style({ transform: 'translateY(0)'}))
+        style({ 'max-height': 0 }),
+        animate('500ms ease',
+          style({ 'max-height': '100%'}))
       ]),
       transition(':leave', [
-        style({ transform: 'translateY(0)'}),
-        animate('200ms ease-in',
-          style({ transform: 'translateY(-100%)' }))
+        style({ 'max-height': '100%' }),
+        animate('500ms ease',
+          style({ 'max-height': 0 }))
       ])
     ])
   ]
 })
 export class MainNavComponent implements AfterViewChecked {
 
-  // md && gt-md media query
+  // (md && gt-md) media query
   mediaQuery = window.matchMedia('(min-width: 960px)');
   mobileNavHidden = true;
-  test = false;
-
-  toggleNavigation() {
-    this.mobileNavHidden = !this.mobileNavHidden;
-  }
 
   constructor(private cdr: ChangeDetectorRef, private renderer: Renderer2) {
   }
@@ -39,6 +34,10 @@ export class MainNavComponent implements AfterViewChecked {
       this.mobileNavHidden = true;
       this.cdr.detectChanges();
     }
+  }
+
+  toggleMobileNav() {
+    this.mobileNavHidden = !this.mobileNavHidden;
   }
 
   toggleDarkMode() {

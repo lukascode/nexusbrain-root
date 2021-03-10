@@ -7,12 +7,5 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  //overflow: hidden;
-  //box-sizing: border-box;
-  //-ms-overflow-style: none;  /* Internet Explorer 10+ */
-  //scrollbar-width: none;  /* Firefox */
+  color: var(--color-text);
 }
-
-//body::-webkit-scrollbar {
-//  display: none;  /* Safari and Chrome */
-//}
