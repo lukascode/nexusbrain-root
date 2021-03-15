@@ -24,9 +24,9 @@
 
   <ng-template #navigation>
     <mat-nav-list>
-      <a mat-list-item href="#">Projects</a>
+      <a mat-list-item [routerLink]="['/projects']" [routerLinkActive]="['active']">Projects</a>
       <a mat-list-item href="#">Teams</a>
-      <a mat-list-item href="#">Workers</a>
+      <a mat-list-item [routerLink]="['/workers']" [routerLinkActive]="['active']">Workers</a>
       <a mat-list-item href="#">Settings</a>
       <a mat-list-item href="#">Log out</a>
     </mat-nav-list>
@@ -43,14 +43,7 @@
     </div>
     <div class="main-content" [ngClass.md]="'desktop-main-content'" [ngClass.gt-md]="'desktop-main-content'">
       <!-- page content -->
-
-      <!-- dummy content, you can remove this -->
-<!--      <div fxLayout="column" fxLayoutAlign="start center">-->
-<!--        <img src="https://apicms.thestar.com.my/uploads/images/2020/08/24/831125.jpg" alt="technology" style="max-width: 100%; height: auto; opacity: 0.75">-->
-<!--      </div>-->
-
-      Page content here
-
+      <router-outlet></router-outlet>
       <!-- page content -->
     </div>
     <div class="footer">

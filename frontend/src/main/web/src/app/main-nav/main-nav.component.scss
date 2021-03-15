@@ -66,6 +66,10 @@
         background-color: var(--color-accent);
       }
     }
+
+    .mat-list-item.active {
+      background-color: var(--color-accent);
+    }
   }
 
   .desktop-navigation {

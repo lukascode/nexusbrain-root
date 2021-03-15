@@ -1,4 +1,4 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, ElementRef, Renderer2} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, Renderer2} from '@angular/core';
 import {animate, style, transition, trigger} from "@angular/animations";
 
 @Component({

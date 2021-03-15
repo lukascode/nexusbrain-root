@@ -5,7 +5,8 @@ import {AppComponent} from '@app/app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {SharedModule} from '@app/shared/shared.module';
 import {LayoutModule} from '@angular/cdk/layout';
-import {MainNavComponent} from './main-nav/main-nav.component';
+import {MainNavComponent} from '@app/main-nav/main-nav.component';
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import {MainNavComponent} from './main-nav/main-nav.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     SharedModule,
-    LayoutModule
+    LayoutModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
