@@ -7,6 +7,10 @@ import {SharedModule} from '@app/shared/shared.module';
 import {LayoutModule} from '@angular/cdk/layout';
 import {MainNavComponent} from '@app/main-nav/main-nav.component';
 import {HttpClientModule} from "@angular/common/http";
+import {StoreModule} from "@ngrx/store";
+import {EffectsModule} from "@ngrx/effects";
+import {StoreDevtoolsModule} from "@ngrx/store-devtools";
+import {environment} from "@env/environment";
 
 @NgModule({
   declarations: [
@@ -19,7 +23,13 @@ import {HttpClientModule} from "@angular/common/http";
     BrowserAnimationsModule,
     SharedModule,
     LayoutModule,
-    HttpClientModule
+    HttpClientModule,
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot([]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

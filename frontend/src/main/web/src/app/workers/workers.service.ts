@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {AddWorkerRequest, UpdateWorkerRequest, WorkerDetails} from '@app/workers/workers.model';
 import {ResourceCreated} from '@app/shared/model/resource-created';
 import {Observable} from 'rxjs';
+import {PageRequest, PageResponse} from "@app/shared/model/page";
 
 @Injectable({
   providedIn: 'root'
@@ -27,5 +28,13 @@ export class WorkersService {
 
   deleteWorker(workerId: number): Observable<void> {
     return this.httpClient.delete<void>(`${this.basePath}/${workerId}/delete`);
+  }
+
+  getWorkers(pageRequest: PageRequest): Observable<PageResponse<WorkerDetails>> {
+    let url = `${this.basePath}/search?page=${pageRequest.page}&size=${pageRequest.size}`;
+    if (pageRequest.sort) {
+      url += `&sort=${pageRequest.sort}`;
+    }
+    return this.httpClient.get<PageResponse<WorkerDetails>>(url);
   }
 }

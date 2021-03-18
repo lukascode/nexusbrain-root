@@ -1,2 +1,27 @@
-<p>workers works!</p>
 <button mat-raised-button color="primary" (click)="addWorker()">Dodaj pracownika</button>
+
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <ng-container matColumnDef="fullName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let element"> {{element.fullName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+      <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="numberOfTeams">
+      <th mat-header-cell *matHeaderCellDef>Teams</th>
+      <td mat-cell *matCellDef="let element"> {{element.numberOfTeams}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  </table>
+
+  <mat-paginator [pageSizeOptions]="pageSizeOptions" [length]="totalElements | async"></mat-paginator>
+</div>
