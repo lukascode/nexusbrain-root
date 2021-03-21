@@ -30,10 +30,13 @@ export class WorkersService {
     return this.httpClient.delete<void>(`${this.basePath}/${workerId}/delete`);
   }
 
-  getWorkers(pageRequest: PageRequest): Observable<PageResponse<WorkerDetails>> {
+  getWorkers(pageRequest: PageRequest, phrase: string): Observable<PageResponse<WorkerDetails>> {
     let url = `${this.basePath}/search?page=${pageRequest.page}&size=${pageRequest.size}`;
     if (pageRequest.sort) {
       url += `&sort=${pageRequest.sort}`;
+    }
+    if (phrase) {
+      url += `&phrase=${phrase}`;
     }
     return this.httpClient.get<PageResponse<WorkerDetails>>(url);
   }

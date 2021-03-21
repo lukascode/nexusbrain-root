@@ -28,3 +28,8 @@ export const selectPageRequest = createSelector(
   selectWorkersState,
   (state: State) => state.pageRequest
 );
+
+export const selectSearchPhrase = createSelector(
+  selectWorkersState,
+  (state: State) => state.searchPhrase
+);

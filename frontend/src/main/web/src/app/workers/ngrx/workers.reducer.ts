@@ -19,6 +19,7 @@ export interface State {
   workerCreated: ResourceCreated | any;
   workers: PageResponse<WorkerDetails> | any;
   pageRequest: PageRequest;
+  searchPhrase: string;
 };
 
 export const initialState: State = {
@@ -26,7 +27,8 @@ export const initialState: State = {
   error: null,
   workerCreated: null,
   workers: null,
-  pageRequest: new PageRequest()
+  pageRequest: new PageRequest(),
+  searchPhrase: ''
 };
 
 export const workersReducer = createReducer(
@@ -42,10 +44,11 @@ export const workersReducer = createReducer(
     ...state,
     error: error
   })),
-  on(getWorkersAction, (state, { request }) => ({
+  on(getWorkersAction, (state, { request, phrase }) => ({
     ...state,
     loading: true,
-    pageRequest: request
+    pageRequest: request,
+    searchPhrase: phrase
   })),
   on(getWorkersSuccessAction, (state, { response }) => ({
     ...state,

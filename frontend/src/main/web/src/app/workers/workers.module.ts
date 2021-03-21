@@ -7,6 +7,7 @@ import * as workersReducer from '@app/workers/ngrx/workers.reducer';
 import {StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
 import {WorkersEffects} from "@app/workers/ngrx/workers.effects";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 
 
@@ -17,7 +18,9 @@ import {WorkersEffects} from "@app/workers/ngrx/workers.effects";
     WorkersRoutingModule,
     SharedModule,
     StoreModule.forFeature(workersReducer.workersFeatureKey, workersReducer.workersReducer),
-    EffectsModule.forFeature([WorkersEffects])
+    EffectsModule.forFeature([WorkersEffects]),
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class WorkersModule { }

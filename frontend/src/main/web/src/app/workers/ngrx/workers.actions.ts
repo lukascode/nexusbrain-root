@@ -17,6 +17,6 @@ export const addWorkerAction = createAction(WorkersActions.ADD_WORKER_ACTION, pr
 export const addWorkerSuccessAction = createAction(WorkersActions.ADD_WORKER_SUCCESS_ACTION, props<{ response: ResourceCreated}>());
 export const addWorkerFailureAction = createAction(WorkersActions.ADD_WORKER_FAILURE_ACTION, props<{ error: ApiError }>());
 
-export const getWorkersAction = createAction(WorkersActions.GET_WORKERS_ACTION, props<{ request: PageRequest}>());
+export const getWorkersAction = createAction(WorkersActions.GET_WORKERS_ACTION, props<{ request: PageRequest, phrase: string}>());
 export const getWorkersSuccessAction = createAction(WorkersActions.GET_WORKERS_SUCCESS_ACTION, props<{ response: PageResponse<WorkerDetails>}>());
 export const getWorkersFailureAction = createAction(WorkersActions.GET_WORKERS_FAILURE_ACTION, props<{ error: ApiError}>());
