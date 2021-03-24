@@ -10,13 +10,15 @@ import {merge, Observable, of} from "rxjs";
 import {PageRequest} from "@app/shared/model/page";
 import {debounceTime, delay, distinctUntilChanged, map, startWith, switchMap} from "rxjs/operators";
 import {FormControl} from "@angular/forms";
+import {AlertDialogComponent} from "@app/shared/components/alert-dialog/alert-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-workers',
   templateUrl: './workers.component.html',
   styleUrls: ['./workers.component.scss']
 })
-export class WorkersComponent implements OnInit, AfterViewInit {
+export class WorkersComponent implements AfterViewInit {
 
   displayedColumns: string[] = ['avatar', 'fullName', 'email', 'numberOfTeams', 'actions'];
   pageSizeOptions: number[] = [5, 10, 25, 100];
@@ -30,10 +32,7 @@ export class WorkersComponent implements OnInit, AfterViewInit {
   searchInput = new FormControl();
   searchInputObservable: Observable<String>;
 
-  constructor(private store: Store<State>) {
-  }
-
-  ngOnInit() {
+  constructor(private store: Store<State>, private dialog: MatDialog) {
   }
 
   ngAfterViewInit() {
@@ -56,13 +55,21 @@ export class WorkersComponent implements OnInit, AfterViewInit {
         this.sort.active,
         this.sort.direction
       );
-      this.store.dispatch(workersActions.getWorkersAction({ request: pageRequest, phrase: this.searchInput.value }));
+      this.store.dispatch(workersActions.getWorkersAction({request: pageRequest, phrase: this.searchInput.value}));
     });
   }
 
   addWorker() {
-    const rq: AddWorkerRequest = new AddWorkerRequest("Sakowicz", "sakowicz@example.com");
-    this.store.dispatch(workersActions.addWorkerAction({ request: rq }));
+    const rq: AddWorkerRequest = new AddWorkerRequest("Łukasz Sakowicz", "sakowicz@example.com");
+    this.store.dispatch(workersActions.addWorkerAction({request: rq}));
   }
 
+  deleteWorker(workerId: number) {
+    AlertDialogComponent.WARN(this.dialog, "Ostrzeżenie", "Czy na pewno chcesz usunąć tego pracownika?")
+      .subscribe(result => {
+          if (result) {
+            this.store.dispatch(workersActions.deleteWorkerAction({ workerId }))
+          }
+      });
+  }
 }

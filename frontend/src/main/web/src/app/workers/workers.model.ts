@@ -19,6 +19,7 @@ export class UpdateWorkerRequest {
 }
 
 export interface WorkerDetails {
+  id: number;
   fullName: string;
   email: string;
   numberOfTeams: number;

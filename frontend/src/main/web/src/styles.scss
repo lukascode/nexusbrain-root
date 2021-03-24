@@ -9,3 +9,9 @@ body {
   height: 100%;
   color: var(--color-text);
 }
+
+td, th {
+  white-space: normal;
+  word-wrap: break-word;
+  width: 200px;
+}

@@ -30,6 +30,21 @@ export class WorkersEffects {
     ))
   ))
 
+  deleteWorker$ = createEffect(() => this.actions$.pipe(
+    ofType(WorkersActions.deleteWorkerAction),
+    switchMap(({ workerId }) => this.workersService.deleteWorker(workerId).pipe(
+      withLatestFrom(
+        this.store.select(WorkersSelectors.selectPageRequest),
+        this.store.select(WorkersSelectors.selectSearchPhrase)
+      ),
+      switchMap(([response, latestPageRequest, latestSearchPhrase]) => [
+        WorkersActions.deleteWorkerSuccessAction(),
+        WorkersActions.getWorkersAction({ request: latestPageRequest, phrase: latestSearchPhrase })
+      ]),
+      catchError(error => of(WorkersActions.deleteWorkerFailureAction({ error: error.error })))
+    ))
+  ))
+
   getWorkers$ = createEffect(() => this.actions$.pipe(
     ofType(WorkersActions.getWorkersAction),
     switchMap(({ request, phrase }) => this.workersService.getWorkers(request, phrase).pipe(

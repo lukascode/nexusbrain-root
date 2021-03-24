@@ -31,6 +31,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatBadgeModule} from "@angular/material/badge";
+import {MatRippleModule} from "@angular/material/core";
 
 
 @NgModule({
@@ -68,7 +69,8 @@ import {MatBadgeModule} from "@angular/material/badge";
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatRippleModule
   ]
 })
 export class MaterialModule {

@@ -45,18 +45,17 @@
         </button>
         <mat-menu #workerActions="matMenu">
           <button mat-menu-item>Edit</button>
-          <button mat-menu-item>Delete</button>
+          <button mat-menu-item (click)="deleteWorker(element.id)">Delete</button>
         </mat-menu>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
     <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell" colspan="4" style="text-align: center">No data found</td>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center">No data found</td>
     </tr>
-
   </table>
 
   <mat-paginator [pageSizeOptions]="pageSizeOptions" [length]="totalElements | async"></mat-paginator>

@@ -2,7 +2,7 @@ import {createReducer, on} from '@ngrx/store';
 import {
   addWorkerAction,
   addWorkerFailureAction,
-  addWorkerSuccessAction,
+  addWorkerSuccessAction, deleteWorkerFailureAction,
   getWorkersAction, getWorkersFailureAction,
   getWorkersSuccessAction
 } from '@app/workers/ngrx/workers.actions';
@@ -41,6 +41,10 @@ export const workersReducer = createReducer(
     workerCreated: response
   })),
   on(addWorkerFailureAction, (state, { error }) => ({
+    ...state,
+    error: error
+  })),
+  on(deleteWorkerFailureAction, (state, { error }) => ({
     ...state,
     error: error
   })),
