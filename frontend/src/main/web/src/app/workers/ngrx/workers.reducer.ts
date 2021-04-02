@@ -2,9 +2,9 @@ import {createReducer, on} from '@ngrx/store';
 import {
   addWorkerAction,
   addWorkerFailureAction,
-  addWorkerSuccessAction, deleteWorkerFailureAction,
+  addWorkerSuccessAction, deleteWorkerFailureAction, editWorkerFailureAction, getWorkerFailureAction,
   getWorkersAction, getWorkersFailureAction,
-  getWorkersSuccessAction
+  getWorkersSuccessAction, getWorkerSuccessAction
 } from '@app/workers/ngrx/workers.actions';
 import {ApiError} from "@app/shared/model/api-error";
 import {ResourceCreated} from "@app/shared/model/resource-created";
@@ -20,6 +20,7 @@ export interface State {
   workers: PageResponse<WorkerDetails> | any;
   pageRequest: PageRequest;
   searchPhrase: string;
+  worker: WorkerDetails | any;
 };
 
 export const initialState: State = {
@@ -28,7 +29,8 @@ export const initialState: State = {
   workerCreated: null,
   workers: null,
   pageRequest: new PageRequest(),
-  searchPhrase: ''
+  searchPhrase: '',
+  worker: null
 };
 
 export const workersReducer = createReducer(
@@ -62,6 +64,18 @@ export const workersReducer = createReducer(
   on(getWorkersFailureAction, (state, { error }) => ({
     ...state,
     loading: false,
+    error: error
+  })),
+  on(getWorkerSuccessAction, (state, { response }) => ({
+    ...state,
+    worker: response
+  })),
+  on(getWorkerFailureAction, (state, { error }) => ({
+    ...state,
+    error: error
+  })),
+  on(editWorkerFailureAction, (state, { error }) => ({
+    ...state,
     error: error
   }))
 )

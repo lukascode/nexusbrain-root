@@ -45,6 +45,21 @@ export class WorkersEffects {
     ))
   ))
 
+  editWorker$ = createEffect(() => this.actions$.pipe(
+    ofType(WorkersActions.editWorkerAction),
+    switchMap(({ workerId, request }) => this.workersService.updateWorker(workerId, request).pipe(
+      withLatestFrom(
+        this.store.select(WorkersSelectors.selectPageRequest),
+        this.store.select(WorkersSelectors.selectSearchPhrase)
+      ),
+      switchMap(([response, latestPageRequest, latestSearchPhrase]) => [
+        WorkersActions.editWorkerSuccessAction(),
+        WorkersActions.getWorkersAction({ request: latestPageRequest, phrase: latestSearchPhrase })
+      ]),
+      catchError(error => of(WorkersActions.editWorkerFailureAction({ error: error.error })))
+    ))
+  ))
+
   getWorkers$ = createEffect(() => this.actions$.pipe(
     ofType(WorkersActions.getWorkersAction),
     switchMap(({ request, phrase }) => this.workersService.getWorkers(request, phrase).pipe(
@@ -53,4 +68,11 @@ export class WorkersEffects {
     ))
   ))
 
+  getWorker$ = createEffect(() => this.actions$.pipe(
+    ofType(WorkersActions.getWorkerAction),
+    switchMap(({ workerId }) => this.workersService.getWorker(workerId).pipe(
+      map(response => WorkersActions.getWorkerSuccessAction({ response })),
+      catchError(error => of(WorkersActions.getWorkerFailureAction({ error: error.error })))
+    ))
+  ))
 }

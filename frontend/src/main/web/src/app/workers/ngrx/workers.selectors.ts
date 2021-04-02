@@ -33,3 +33,8 @@ export const selectSearchPhrase = createSelector(
   selectWorkersState,
   (state: State) => state.searchPhrase
 );
+
+export const selectWorker = createSelector(
+  selectWorkersState,
+  (state: State) => state.worker
+);

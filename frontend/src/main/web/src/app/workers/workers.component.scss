@@ -1,35 +1,3 @@
-.table-container {
-  padding: 1em;
-  position: relative;
-  min-height: 200px;
-  overflow: auto;
-
-  .loading-spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  table {
-    width: 100%;
-  }
-
-  .mat-row {
-    .mat-cell.mat-column-actions {
-      text-align: right;
-
-      .worker-actions {
-        opacity: 0.5;
-      }
-    }
-
-    &:hover {
-      .mat-cell.mat-column-actions {
-        .worker-actions {
-          opacity: 1;
-        }
-      }
-    }
-  }
+.add-worker-button {
+  margin-bottom: 1em;
 }

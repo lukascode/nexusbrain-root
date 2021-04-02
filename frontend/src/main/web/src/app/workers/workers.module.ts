@@ -8,11 +8,14 @@ import {StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
 import {WorkersEffects} from "@app/workers/ngrx/workers.effects";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { AddWorkerComponent } from './add-worker/add-worker.component';
+import { EditWorkerComponent } from './edit-worker/edit-worker.component';
+import { WorkersListComponent } from './workers-list/workers-list.component';
 
 
 
 @NgModule({
-  declarations: [WorkersComponent],
+  declarations: [WorkersComponent, AddWorkerComponent, EditWorkerComponent, WorkersListComponent],
   imports: [
     CommonModule,
     WorkersRoutingModule,
