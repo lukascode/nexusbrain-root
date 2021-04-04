@@ -9,3 +9,9 @@ mat-dialog-content {
 button {
   width: 120px;
 }
+
+.backend-error {
+  color: var(--color-warn);
+  font-size: 75%;
+  margin-top: 1em;
+}

@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.nexusbrain</groupId>
             <artifactId>repository</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

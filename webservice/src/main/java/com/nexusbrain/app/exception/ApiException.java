@@ -32,6 +32,10 @@ public class ApiException extends RuntimeException {
         return new ApiException("WORKER_NOT_FOUND", String.format("Worker with id: %d not found", workerId), NOT_FOUND);
     }
 
+    public static ApiException emailAlreadyExists(String email) {
+        return new ApiException("EMAIL_ALREADY_EXISTS", String.format("Email '%s' already exists in the database", email), CONFLICT);
+    }
+
     public static ApiException teamNotFound(long teamId) {
         return new ApiException("TEAM_NOT_FOUND", String.format("Team with id: %d not found", teamId), NOT_FOUND);
     }

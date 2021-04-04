@@ -10,6 +10,7 @@ import com.nexusbrain.app.assertion.TeamAssertions;
 import com.nexusbrain.app.assertion.WorkerAssertions;
 import com.nexusbrain.app.base.BaseIT;
 import com.nexusbrain.app.data.ProjectData;
+import com.nexusbrain.app.data.WorkerData;
 import com.nexusbrain.app.flow.ProjectFlow;
 import com.nexusbrain.app.flow.TeamFlow;
 import com.nexusbrain.app.flow.WorkerFlow;
@@ -129,8 +130,14 @@ public class ProjectControllerIT extends BaseIT {
         long projectId = projectFlow.addProject().get().getBody().getResourceId();
         long team1 = projectFlow.addTeamToProject(projectId).get().getBody().getResourceId();
         long team2 = projectFlow.addTeamToProject(projectId).get().getBody().getResourceId();
-        long worker1 = workerFlow.addWorker().get().getBody().getResourceId();
-        long worker2 = workerFlow.addWorker().get().getBody().getResourceId();
+        long worker1 = workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("test1@test").build()
+        ).get().getBody().getResourceId();
+        long worker2 = workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("test2@test").build()
+        ).get().getBody().getResourceId();
         teamFlow.addWorkerToTeam(team1, worker1);
         teamFlow.addWorkerToTeam(team2, worker1);
         teamFlow.addWorkerToTeam(team2, worker2);

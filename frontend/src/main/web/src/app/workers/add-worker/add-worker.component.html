@@ -24,6 +24,9 @@
       </mat-error>
     </mat-form-field>
   </form>
+  <p class="backend-error" *ngIf="backendError">
+    {{ backendErrorMessage }}
+  </p>
 </mat-dialog-content>
 <mat-dialog-actions align="center">
   <button mat-raised-button color="accent" (click)="submit()">Add</button>

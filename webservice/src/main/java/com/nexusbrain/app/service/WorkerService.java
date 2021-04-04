@@ -9,6 +9,7 @@ import com.nexusbrain.app.model.Worker;
 import com.nexusbrain.app.repository.WorkerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
+import static com.nexusbrain.app.exception.ApiException.emailAlreadyExists;
 import static com.nexusbrain.app.exception.ApiException.workerNotFound;
 
 @Service
@@ -51,19 +53,34 @@ public class WorkerService {
     @Transactional
     public long addWorker(AddWorkerRequest request) {
         Objects.requireNonNull(request);
-        Worker worker = new Worker(request.getFullName(), request.getEmail());
-        workerRepository.save(worker);
-        LOG.info("Worker {email: {}, id: {}} added successfully", request.getEmail(), worker.getId());
-        return worker.getId();
+        try {
+            Worker worker = new Worker(request.getFullName(), request.getEmail());
+            workerRepository.saveAndFlush(worker);
+            LOG.info("Worker {email: {}, id: {}} added successfully", request.getEmail(), worker.getId());
+            return worker.getId();
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("email")) {
+                throw emailAlreadyExists(request.getEmail());
+            }
+            throw e;
+        }
     }
 
     @Transactional
     public void updateWorker(long workerId, UpdateWorkerRequest request) {
         Objects.requireNonNull(request);
-        Worker worker = getWorker(workerId);
-        worker.setFullName(request.getFullName());
-        worker.setEmail(request.getEmail());
-        LOG.info("Worker {id: {}} updated successfully", workerId);
+        try {
+            Worker worker = getWorker(workerId);
+            worker.setFullName(request.getFullName());
+            worker.setEmail(request.getEmail());
+            workerRepository.saveAndFlush(worker);
+            LOG.info("Worker {id: {}} updated successfully", workerId);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("email")) {
+                throw emailAlreadyExists(request.getEmail());
+            }
+            throw e;
+        }
     }
 
     @Transactional

@@ -9,6 +9,11 @@ export const selectLoading = createSelector(
   (state: State) => state.loading
 );
 
+export const selectError = createSelector(
+  selectWorkersState,
+  (state: State) => state.error
+);
+
 export const selectWorkerCreated = createSelector(
   selectWorkersState,
   (state: State) => state.workerCreated

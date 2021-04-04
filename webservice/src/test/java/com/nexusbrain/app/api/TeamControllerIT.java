@@ -9,14 +9,17 @@ import com.nexusbrain.app.assertion.TeamAssertions;
 import com.nexusbrain.app.assertion.WorkerAssertions;
 import com.nexusbrain.app.base.BaseIT;
 import com.nexusbrain.app.data.TeamData;
+import com.nexusbrain.app.data.WorkerData;
 import com.nexusbrain.app.flow.ProjectFlow;
 import com.nexusbrain.app.flow.TeamFlow;
 import com.nexusbrain.app.flow.WorkerFlow;
 import com.nexusbrain.app.repository.TeamRepository;
+import com.nexusbrain.app.repository.WorkerRepository;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -43,6 +46,15 @@ public class TeamControllerIT extends BaseIT {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private WorkerRepository workerRepository;
+
+    @BeforeMethod
+    public void beforeMethod() {
+        workerRepository.deleteAll();
+        teamRepository.deleteAll();
+    }
 
     @Test
     public void shouldAddTeamProperly() {
@@ -246,8 +258,14 @@ public class TeamControllerIT extends BaseIT {
         // given
         long projectId = projectFlow.addProject().get().getBody().getResourceId();
         long teamId = projectFlow.addTeamToProject(projectId).get().getBody().getResourceId();
-        long worker1 = workerFlow.addWorker().get().getBody().getResourceId();
-        long worker2 = workerFlow.addWorker().get().getBody().getResourceId();
+        long worker1 = workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("test1@test").build()
+        ).get().getBody().getResourceId();
+        long worker2 = workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("test2@test").build()
+        ).get().getBody().getResourceId();
         teamFlow.addWorkerToTeam(teamId, worker1);
         teamFlow.addWorkerToTeam(teamId, worker2);
 

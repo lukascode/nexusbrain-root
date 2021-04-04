@@ -25,7 +25,7 @@ CREATE TABLE `teams`
 CREATE TABLE `workers`
 (
     `id`        bigint(20)   NOT NULL AUTO_INCREMENT,
-    `email`     varchar(255) NOT NULL,
+    `email`     varchar(255) NOT NULL UNIQUE,
     `full_name` varchar(255) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB

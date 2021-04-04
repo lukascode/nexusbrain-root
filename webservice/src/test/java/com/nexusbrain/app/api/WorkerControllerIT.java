@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class WorkerControllerIT extends BaseIT {
@@ -31,6 +32,11 @@ public class WorkerControllerIT extends BaseIT {
 
     @Autowired
     private WorkerRepository workerRepository;
+
+    @BeforeMethod
+    public void beforeMethod() {
+        workerRepository.deleteAll();
+    }
 
     @Test
     public void shouldAddWorkerProperly() {
@@ -62,6 +68,21 @@ public class WorkerControllerIT extends BaseIT {
         errorAssertions.assertThat(response.getBody())
                 .hasMessage("BAD_REQUEST")
                 .hasDescription("email: must be a well-formed email address")
+                .hasEventId();
+    }
+
+    @Test
+    public void shouldNotAddWorkerWhenEmailAlreadyExists() {
+        // given
+        workerFlow.addWorker();
+
+        // when add worker with the same email again
+        ResponseEntity<ApiErrorDetails> response = workerFlow.addWorker().getLeft();
+
+        // then
+        errorAssertions.assertThat(response.getBody())
+                .hasMessage("EMAIL_ALREADY_EXISTS")
+                .hasDescription("Email 'john@example.com' already exists in the database")
                 .hasEventId();
     }
 
@@ -117,6 +138,30 @@ public class WorkerControllerIT extends BaseIT {
     }
 
     @Test
+    public void shouldNotUpdateWorkerWhenEmailAlreadyExists() {
+        // given
+        workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("john@example.com").build()
+        );
+        long workerId = workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("mark@example.com").build()
+        ).get().getBody().getResourceId();
+
+        // when
+        UpdateWorkerRequest updateRequest = WorkerData.UpdateWorkerRequestBuilder.builder()
+                                                     .withEmail("john@example.com").build();
+        ResponseEntity<ApiErrorDetails> response = workerFlow.updateWorker(workerId, updateRequest).getLeft();
+
+        // then
+        errorAssertions.assertThat(response.getBody())
+                .hasMessage("EMAIL_ALREADY_EXISTS")
+                .hasDescription("Email 'john@example.com' already exists in the database")
+                .hasEventId();
+    }
+
+    @Test
     public void shouldDeleteWorkerProperly() {
         // given
         long workerId = workerFlow.addWorker().get().getBody().getResourceId();
@@ -138,12 +183,19 @@ public class WorkerControllerIT extends BaseIT {
 
     @Test
     public void searchWorkersTest() {
-        workerRepository.deleteAll();
-
-        // given 3 workers with default name and email
-        workerFlow.addWorker();
-        workerFlow.addWorker();
-        workerFlow.addWorker();
+        // given 3 workers
+        workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("john@example.com").build()
+        );
+        workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("mark@example.com").build()
+        );
+        workerFlow.addWorker(
+                WorkerData.AddWorkerRequestBuilder
+                        .builder().withEmail("john@test").build()
+        );
 
         // when
         Either<ResponseEntity<ApiErrorDetails>, ResponseEntity<Page<WorkerDetailsResponse>>> either = workerFlow.searchWorkers();
@@ -157,8 +209,6 @@ public class WorkerControllerIT extends BaseIT {
 
     @Test
     public void searchWorkersByPhraseTest() {
-        workerRepository.deleteAll();
-
         // given
         workerFlow.addWorker(
                 WorkerData.AddWorkerRequestBuilder
