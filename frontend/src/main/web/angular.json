@@ -32,7 +32,8 @@
             ],
             "styles": [
               "src/theme.scss",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/angular-notifier/styles.scss"
             ],
             "scripts": []
           },
@@ -96,7 +97,8 @@
             ],
             "styles": [
               "src/theme.scss",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/angular-notifier/styles.scss"
             ],
             "scripts": []
           }

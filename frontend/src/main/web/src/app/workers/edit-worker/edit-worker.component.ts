@@ -8,6 +8,8 @@ import * as workersSelectors from '@app/workers/ngrx/workers.selectors';
 import {UpdateWorkerRequest} from "@app/workers/workers.model";
 import {Actions, ofType} from "@ngrx/effects";
 import {Subscription} from "rxjs";
+import {TranslateService} from "@ngx-translate/core";
+import {NotifierService} from "angular-notifier";
 
 @Component({
   selector: 'app-edit-worker',
@@ -35,6 +37,8 @@ export class EditWorkerComponent implements OnInit, OnDestroy {
   constructor(private fb: FormBuilder,
               private store: Store<State>,
               private actions$: Actions,
+              private notifier: NotifierService,
+              private translate: TranslateService,
               @Inject(MAT_DIALOG_DATA) public data: any,
               public dialogRef: MatDialogRef<EditWorkerComponent>) { }
 
@@ -51,13 +55,15 @@ export class EditWorkerComponent implements OnInit, OnDestroy {
       ofType(workersActions.editWorkerSuccessAction)
     ).subscribe(() => {
       this.dialogRef.close();
+      this.notifier.notify('success',
+        this.translate.instant('workers.successMessages.workerUpdatedSuccessfully'));
     });
     this.failureSub = this.actions$.pipe(
       ofType(workersActions.editWorkerFailureAction)
     ).subscribe(({ error }) => {
       if (error.message === 'EMAIL_ALREADY_EXISTS') {
         this.backendError = true;
-        this.backendErrorMessage = 'Error: Given address email already exists in the database';
+        this.backendErrorMessage = 'workers.errorMessages.emailAlreadyExists';
       }
     });
     this.formChanges = this.editWorkerForm.valueChanges.subscribe(() => {

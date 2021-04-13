@@ -1,0 +1,47 @@
+{
+  "search": "Szukaj",
+  "add": "Dodaj",
+  "edit": "Edytuj",
+  "delete": "Usuń",
+  "cancel": "Anuluj",
+  "yes": "Tak",
+  "no": "Nie",
+  "warning": "Ostrzeżenie",
+  "navigation": {
+    "projects": "Projekty",
+    "teams": "Zespoły",
+    "workers": "Pracownicy",
+    "settings": "Ustawienia",
+    "logout": "Wyloguj"
+  },
+  "paginator": {
+    "itemsPerPageLabel": "Liczba elementów na stronie:",
+    "nextPageLabel": "Następna strona",
+    "previousPageLabel": "Poprzednia strona",
+    "of": "z"
+  },
+  "workers": {
+    "addWorker": "Dodaj pracownika",
+    "editWorker": "Edytuj pracownika",
+    "fullName": "Imię i Nazwisko",
+    "email": "Email",
+    "teams": "Zespoły",
+    "successMessages": {
+      "workerAddedSuccessfully": "Pomyślnie dodano pracownika",
+      "workerUpdatedSuccessfully": "Pomyślnie zaktualizowano pracownika",
+      "workerDeletedSuccessfully": "Pomyślnie usunięto pracownika"
+    },
+    "warningMessages": {
+      "deleteWorkerWarning": "Czy na pewno chcesz usunąć tego pracownika?"
+    },
+    "errorMessages": {
+      "fullNameIs": "Imię i nazwisko jest",
+      "emailIs": "Adres email jest",
+      "required1": "wymagane",
+      "required2": "wymagany",
+      "fullNameMaxLengthIs": "Maksymalna długość imienia i nazwiska to {{maxLength}}",
+      "enterValidEmail": "Wprowadź poprawny adres email",
+      "emailAlreadyExists": "Podany adres email już istnieje"
+    }
+  }
+}

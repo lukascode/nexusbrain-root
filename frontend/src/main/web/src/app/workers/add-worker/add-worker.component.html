@@ -1,34 +1,36 @@
-<h2 mat-dialog-title>Add worker</h2>
+<h2 mat-dialog-title>{{ 'workers.addWorker' | translate }}</h2>
 <mat-dialog-content>
   <form [formGroup]="addWorkerForm" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="2em">
     <mat-form-field>
-      <mat-label>Full name</mat-label>
+      <mat-label>{{ 'workers.fullName' | translate }}</mat-label>
       <input matInput type="text" formControlName="fullName">
       <mat-error *ngIf="addWorkerForm.controls.fullName.hasError('required')">
-        Fullname is <strong>required</strong>
+        {{ 'workers.errorMessages.fullNameIs' | translate }}
+        <strong>{{ 'workers.errorMessages.required1' | translate }}</strong>
       </mat-error>
       <mat-error *ngIf="addWorkerForm.controls.fullName.hasError('maxlength')">
-        The maximum length of Full name is 255
+        {{ 'workers.errorMessages.fullNameMaxLengthIs' | translate:{maxLength: 255} }}
       </mat-error>
     </mat-form-field>
     <mat-form-field>
-      <mat-label>Email</mat-label>
+      <mat-label>{{ 'workers.email' | translate }}</mat-label>
       <input matInput type="text" formControlName="email">
       <mat-error *ngIf="addWorkerForm.controls.email.hasError('required')">
-        Email is <strong>required</strong>
+        {{ 'workers.errorMessages.emailIs' | translate }}
+        <strong>{{ 'workers.errorMessages.required2' | translate }}</strong>
       </mat-error>
       <mat-error
         *ngIf="addWorkerForm.controls.email.hasError('email')
         && !addWorkerForm.controls.email.hasError('required')">
-        Please enter a valid email address
+        {{ 'workers.errorMessages.enterValidEmail' | translate }}
       </mat-error>
     </mat-form-field>
   </form>
   <p class="backend-error" *ngIf="backendError">
-    {{ backendErrorMessage }}
+    {{ backendErrorMessage | translate }}
   </p>
 </mat-dialog-content>
 <mat-dialog-actions align="center">
-  <button mat-raised-button color="accent" (click)="submit()">Add</button>
-  <button mat-raised-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="accent" (click)="submit()">{{ 'add' | translate }}</button>
+  <button mat-raised-button mat-dialog-close>{{ 'cancel' | translate }}</button>
 </mat-dialog-actions>

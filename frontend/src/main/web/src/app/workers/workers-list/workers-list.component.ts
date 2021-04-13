@@ -13,6 +13,7 @@ import {PageRequest} from "@app/shared/model/page";
 import * as workersActions from "@app/workers/ngrx/workers.actions";
 import {EditWorkerComponent} from "@app/workers/edit-worker/edit-worker.component";
 import {AlertDialogComponent} from "@app/shared/components/alert-dialog/alert-dialog.component";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-workers-list',
@@ -21,7 +22,7 @@ import {AlertDialogComponent} from "@app/shared/components/alert-dialog/alert-di
 })
 export class WorkersListComponent implements AfterViewInit {
   displayedColumns: string[] = ['avatar', 'fullName', 'email', 'numberOfTeams', 'actions'];
-  pageSizeOptions: number[] = [5, 10, 25, 100];
+  pageSizeOptions: number[] = [25];
   dataSource: Observable<WorkerDetails[]>;
   totalElements: Observable<number>;
   isLoading: Observable<boolean>;
@@ -32,7 +33,9 @@ export class WorkersListComponent implements AfterViewInit {
   searchInput = new FormControl();
   searchInputObservable: Observable<String>;
 
-  constructor(private store: Store<State>, private dialog: MatDialog) {
+  constructor(private store: Store<State>,
+              private dialog: MatDialog,
+              private translate: TranslateService) {
   }
 
   ngAfterViewInit() {
@@ -64,8 +67,11 @@ export class WorkersListComponent implements AfterViewInit {
   }
 
   deleteWorker(workerId: number) {
-    AlertDialogComponent.WARN(this.dialog, "Ostrzeżenie", "Czy na pewno chcesz usunąć tego pracownika?")
-      .subscribe(result => {
+    AlertDialogComponent.WARN(
+      this.dialog,
+      this.translate.instant('warning'),
+      this.translate.instant('workers.warningMessages.deleteWorkerWarning'))
+      .subscribe((result: boolean) => {
         if (result) {
           this.store.dispatch(workersActions.deleteWorkerAction({ workerId }))
         }

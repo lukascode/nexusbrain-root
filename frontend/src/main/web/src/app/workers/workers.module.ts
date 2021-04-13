@@ -11,6 +11,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { AddWorkerComponent } from './add-worker/add-worker.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { WorkersListComponent } from './workers-list/workers-list.component';
+import {TranslateModule} from "@ngx-translate/core";
 
 
 
@@ -23,7 +24,8 @@ import { WorkersListComponent } from './workers-list/workers-list.component';
     StoreModule.forFeature(workersReducer.workersFeatureKey, workersReducer.workersReducer),
     EffectsModule.forFeature([WorkersEffects]),
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TranslateModule.forChild()
   ]
 })
 export class WorkersModule { }
